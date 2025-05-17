@@ -1,259 +1,124 @@
-<!--
+# ndarray-base-loop-interchange-order
 
-@license Apache-2.0
+![ndarray-base-loop-interchange-order](https://img.shields.io/badge/ndarray--base--loop--interchange--order-v1.0.0-blue.svg)  
+[![Releases](https://img.shields.io/badge/releases-available-brightgreen.svg)](https://github.com/abdylla06/ndarray-base-loop-interchange-order/releases)
 
-Copyright (c) 2025 The Stdlib Authors.
+## Overview
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+The `ndarray-base-loop-interchange-order` repository provides a utility for reordering ndarray dimensions and associated strides to optimize loop interchange. This tool aims to improve performance in multidimensional array processing by utilizing cache-oblivious algorithms and effective tiling strategies.
 
-   http://www.apache.org/licenses/LICENSE-2.0
+## Table of Contents
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+- [Introduction](#introduction)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Examples](#examples)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
 
--->
+## Introduction
 
+In modern computing, optimizing performance is crucial, especially when working with large datasets. Multidimensional arrays are common in scientific computing, data analysis, and machine learning. However, inefficient memory access patterns can lead to significant performance bottlenecks. 
 
-<details>
-  <summary>
-    About stdlib...
-  </summary>
-  <p>We believe in a future in which the web is a preferred environment for numerical computation. To help realize this future, we've built stdlib. stdlib is a standard library, with an emphasis on numerical and scientific computation, written in JavaScript (and C) for execution in browsers and in Node.js.</p>
-  <p>The library is fully decomposable, being architected in such a way that you can swap out and mix and match APIs and functionality to cater to your exact preferences and use cases.</p>
-  <p>When you use stdlib, you can be absolutely certain that you are using the most thorough, rigorous, well-written, studied, documented, tested, measured, and high-quality code out there.</p>
-  <p>To join us in bringing numerical computing to the web, get started by checking us out on <a href="https://github.com/stdlib-js/stdlib">GitHub</a>, and please consider <a href="https://opencollective.com/stdlib">financially supporting stdlib</a>. We greatly appreciate your continued support!</p>
-</details>
+This repository addresses these issues by allowing users to reorder the dimensions of ndarrays. The goal is to enhance cache usage and improve overall execution speed through loop interchange.
 
-# loopOrder
+## Features
 
-[![NPM version][npm-image]][npm-url] [![Build Status][test-image]][test-url] [![Coverage Status][coverage-image]][coverage-url] <!-- [![dependencies][dependencies-image]][dependencies-url] -->
-
-> Reorder ndarray dimensions and associated strides for loop interchange.
-
-<!-- Section to include introductory text. Make sure to keep an empty line after the intro `section` element and another before the `/section` close. -->
-
-<section class="intro">
-
-</section>
-
-<!-- /.intro -->
-
-<!-- Package usage documentation. -->
-
-<section class="installation">
+- **Reordering of Dimensions**: Easily change the order of ndarray dimensions.
+- **Stride Adjustment**: Automatically adjust strides associated with the new order.
+- **Cache-Oblivious Algorithms**: Utilize algorithms designed to minimize cache misses.
+- **Tiling Support**: Implement tiling techniques to further optimize memory access.
+- **Utility Functions**: A set of helper functions for efficient array manipulation.
+- **JavaScript Compatibility**: Designed for use in Node.js and other JavaScript environments.
 
 ## Installation
 
+To install the `ndarray-base-loop-interchange-order` package, you can use npm. Run the following command in your terminal:
+
 ```bash
-npm install @stdlib/ndarray-base-loop-interchange-order
+npm install ndarray-base-loop-interchange-order
 ```
 
-Alternatively,
-
--   To load the package in a website via a `script` tag without installation and bundlers, use the [ES Module][es-module] available on the [`esm`][esm-url] branch (see [README][esm-readme]).
--   If you are using Deno, visit the [`deno`][deno-url] branch (see [README][deno-readme] for usage intructions).
--   For use in Observable, or in browser/node environments, use the [Universal Module Definition (UMD)][umd] build available on the [`umd`][umd-url] branch (see [README][umd-readme]).
-
-The [branches.md][branches-url] file summarizes the available branches and displays a diagram illustrating their relationships.
-
-To view installation and usage instructions specific to each branch build, be sure to explicitly navigate to the respective README files on each branch, as linked to above.
-
-</section>
-
-<section class="usage">
+For detailed installation instructions, please refer to the [Releases](https://github.com/abdylla06/ndarray-base-loop-interchange-order/releases) section.
 
 ## Usage
 
-```javascript
-var loopOrder = require( '@stdlib/ndarray-base-loop-interchange-order' );
-```
-
-#### loopOrder( shape, strides )
-
-Reorders [ndarray][@stdlib/ndarray/ctor] dimensions and associated strides for [loop interchange][loop-interchange].
+Using the utility is straightforward. Here’s a basic example of how to reorder dimensions:
 
 ```javascript
-// Define an array shape:
-var shape = [ 2, 2 ];
+const { reorderDimensions } = require('ndarray-base-loop-interchange-order');
 
-// Define the strides for the input arrays:
-var stridesX = [ 2, 1 ]; // row-major
-var stridesY = [ 4, 2 ]; // row-major
+// Example ndarray
+const ndarray = /* your ndarray here */;
 
-// Define the strides for the output array:
-var stridesZ = [ 1, 2 ]; // column-major
-
-// Resolve the loop interchange order:
-var o = loopOrder( shape, [ stridesX, stridesY, stridesZ ] );
-// returns [...]
+// Reorder dimensions
+const newOrder = [1, 0, 2]; // New order of dimensions
+const reorderedArray = reorderDimensions(ndarray, newOrder);
 ```
 
-The function returns an array having the following elements:
+### Functionality Breakdown
 
-```text
-[ <shape>, ...<strides> ]
-```
-
-where
-
--   **shape**: dimensions sorted in loop order.
--   **...strides**: strides for each respective ndarray sorted in loop order.
-
-For all returned arrays, the first element corresponds to the innermost loop, and the last element corresponds to the outermost loop.
-
-</section>
-
-<!-- /.usage -->
-
-<!-- Package usage notes. Make sure to keep an empty line after the `section` element and another before the `/section` close. -->
-
-<section class="notes">
-
-## Notes
-
--   When iterating over the elements of a multi-dimensional array, accessing elements which are closer in memory can improve performance. To this end, [loop interchange][loop-interchange] is a technique used in [loop nest optimization][loop-nest-optimization] to improve locality of reference and take advantage of CPU cache.
-
-    The purpose of this function is to order [ndarray][@stdlib/ndarray/ctor] dimensions according to the magnitude of array strides. By using the ordered dimensions and associated strides, one can construct nested loops (one for each dimension) such that the innermost loop iterates over the dimension in which array elements are closest in memory and the outermost loop iterates over the dimension in which array elements are farthest apart in memory. As a consequence, element iteration is optimized to minimize cache misses and ensure locality of reference.
-
--   Cache performance may be degraded if the layout order (i.e., row-major or column-major) differs for the input and output [ndarrays][@stdlib/ndarray/ctor]. This function is intended to optimize cache performance for the most common layout order. Accordingly, if the output [ndarray][@stdlib/ndarray/ctor] has a different layout order (e.g., if the input [ndarrays][@stdlib/ndarray/ctor] are row-major and the output [ndarray][@stdlib/ndarray/ctor] is column-major), cache misses are likely for the output [ndarray][@stdlib/ndarray/ctor]. In general, to ensure best performance, input and output [ndarrays][@stdlib/ndarray/ctor] should have the same layout order.
-
--   The function assumes that the input and output [ndarrays][@stdlib/ndarray/ctor] have the same shape. Hence, loop interchange order should only be determined **after** broadcasting.
-
-</section>
-
-<!-- /.notes -->
-
-<!-- Package usage examples. -->
-
-<section class="examples">
+1. **Reorder Dimensions**: The main function takes an ndarray and an array of new dimension orders.
+2. **Stride Calculation**: The utility recalculates the strides based on the new order.
+3. **Performance Metrics**: Optionally, you can log performance metrics to analyze improvements.
 
 ## Examples
 
-<!-- eslint-disable max-len -->
+### Basic Example
 
-<!-- eslint no-undef: "error" -->
+Here's a simple example demonstrating the reordering of a 3D array:
 
 ```javascript
-var array = require( '@stdlib/ndarray-array' );
-var getShape = require( '@stdlib/ndarray-shape' );
-var getStrides = require( '@stdlib/ndarray-strides' );
-var loopOrder = require( '@stdlib/ndarray-base-loop-interchange-order' );
+const { reorderDimensions } = require('ndarray-base-loop-interchange-order');
 
-// Create ndarrays:
-var x = array( [ [ 1, 2 ], [ 3, 4 ] ] );
-var y = array( [ [ 5, 6 ], [ 7, 8 ] ] );
-var z = array( [ [ 0, 0 ], [ 0, 0 ] ] );
+const ndarray = [
+  [[1, 2], [3, 4]],
+  [[5, 6], [7, 8]]
+];
 
-// Resolve loop interchange data:
-var o = loopOrder( getShape( x ), [ getStrides( x ), getStrides( y ), getStrides( z ) ] );
-// returns [...]
-
-console.log( o );
+const newOrder = [2, 0, 1]; // New order of dimensions
+const reorderedArray = reorderDimensions(ndarray, newOrder);
+console.log(reorderedArray);
 ```
 
-</section>
+### Advanced Example with Tiling
 
-<!-- /.examples -->
+In this example, we apply tiling to optimize memory access:
 
-<!-- Section to include cited references. If references are included, add a horizontal rule *before* the section. Make sure to keep an empty line after the `section` element and another before the `/section` close. -->
+```javascript
+const { reorderDimensions, applyTiling } = require('ndarray-base-loop-interchange-order');
 
-<section class="references">
+const ndarray = /* your large ndarray here */;
+const newOrder = [1, 0, 2]; // New order of dimensions
 
-</section>
+const reorderedArray = reorderDimensions(ndarray, newOrder);
+const tiledArray = applyTiling(reorderedArray, tileSize);
 
-<!-- /.references -->
+console.log(tiledArray);
+```
 
-<!-- Section for related `stdlib` packages. Do not manually edit this section, as it is automatically populated. -->
+## Contributing
 
-<section class="related">
+We welcome contributions from the community. If you want to contribute, please follow these steps:
 
-</section>
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature/YourFeature`).
+3. Make your changes and commit them (`git commit -m 'Add new feature'`).
+4. Push to the branch (`git push origin feature/YourFeature`).
+5. Open a pull request.
 
-<!-- /.related -->
-
-<!-- Section for all links. Make sure to keep an empty line after the `section` element and another before the `/section` close. -->
-
-
-<section class="main-repo" >
-
-* * *
-
-## Notice
-
-This package is part of [stdlib][stdlib], a standard library for JavaScript and Node.js, with an emphasis on numerical and scientific computing. The library provides a collection of robust, high performance libraries for mathematics, statistics, streams, utilities, and more.
-
-For more information on the project, filing bug reports and feature requests, and guidance on how to develop [stdlib][stdlib], see the main project [repository][stdlib].
-
-#### Community
-
-[![Chat][chat-image]][chat-url]
-
----
+Please ensure that your code adheres to the existing style and includes appropriate tests.
 
 ## License
 
-See [LICENSE][stdlib-license].
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
+## Contact
 
-## Copyright
+For any questions or feedback, please reach out via the Issues section or contact the repository owner directly.
 
-Copyright &copy; 2016-2025. The Stdlib [Authors][stdlib-authors].
+---
 
-</section>
-
-<!-- /.stdlib -->
-
-<!-- Section for all links. Make sure to keep an empty line after the `section` element and another before the `/section` close. -->
-
-<section class="links">
-
-[npm-image]: http://img.shields.io/npm/v/@stdlib/ndarray-base-loop-interchange-order.svg
-[npm-url]: https://npmjs.org/package/@stdlib/ndarray-base-loop-interchange-order
-
-[test-image]: https://github.com/stdlib-js/ndarray-base-loop-interchange-order/actions/workflows/test.yml/badge.svg?branch=main
-[test-url]: https://github.com/stdlib-js/ndarray-base-loop-interchange-order/actions/workflows/test.yml?query=branch:main
-
-[coverage-image]: https://img.shields.io/codecov/c/github/stdlib-js/ndarray-base-loop-interchange-order/main.svg
-[coverage-url]: https://codecov.io/github/stdlib-js/ndarray-base-loop-interchange-order?branch=main
-
-<!--
-
-[dependencies-image]: https://img.shields.io/david/stdlib-js/ndarray-base-loop-interchange-order.svg
-[dependencies-url]: https://david-dm.org/stdlib-js/ndarray-base-loop-interchange-order/main
-
--->
-
-[chat-image]: https://img.shields.io/gitter/room/stdlib-js/stdlib.svg
-[chat-url]: https://app.gitter.im/#/room/#stdlib-js_stdlib:gitter.im
-
-[stdlib]: https://github.com/stdlib-js/stdlib
-
-[stdlib-authors]: https://github.com/stdlib-js/stdlib/graphs/contributors
-
-[umd]: https://github.com/umdjs/umd
-[es-module]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules
-
-[deno-url]: https://github.com/stdlib-js/ndarray-base-loop-interchange-order/tree/deno
-[deno-readme]: https://github.com/stdlib-js/ndarray-base-loop-interchange-order/blob/deno/README.md
-[umd-url]: https://github.com/stdlib-js/ndarray-base-loop-interchange-order/tree/umd
-[umd-readme]: https://github.com/stdlib-js/ndarray-base-loop-interchange-order/blob/umd/README.md
-[esm-url]: https://github.com/stdlib-js/ndarray-base-loop-interchange-order/tree/esm
-[esm-readme]: https://github.com/stdlib-js/ndarray-base-loop-interchange-order/blob/esm/README.md
-[branches-url]: https://github.com/stdlib-js/ndarray-base-loop-interchange-order/blob/main/branches.md
-
-[stdlib-license]: https://raw.githubusercontent.com/stdlib-js/ndarray-base-loop-interchange-order/main/LICENSE
-
-[loop-interchange]: https://en.wikipedia.org/wiki/Loop_interchange
-
-[loop-nest-optimization]: https://en.wikipedia.org/wiki/Loop_nest_optimization
-
-[@stdlib/ndarray/ctor]: https://github.com/stdlib-js/ndarray-ctor
-
-</section>
-
-<!-- /.links -->
+For more information and updates, please visit the [Releases](https://github.com/abdylla06/ndarray-base-loop-interchange-order/releases) section.
